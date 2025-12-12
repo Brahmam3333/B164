@@ -1,0 +1,99 @@
+T-TEST ANALYSIS
+================
+
+Rows before cleaning:  11000 
+Rows after cleaning:  11000 
+
+Counts by gender (Male/Female):
+
+    Agender    Bigender      Female Genderfluid Genderqueer        Male 
+          0           0        4918           0           0        4950 
+      Other  Polygender 
+          0           0 
+
+Summary statistics by gender:
+# A tibble: 8 × 7
+  buyer_gender     n mean_sale_price median_sale_price sd_sale_price
+  <fct>        <int>           <dbl>             <dbl>         <dbl>
+1 Agender        177          41873.            42915         17710.
+2 Bigender       197          41050.            39533         20001.
+3 Female        4918          42379.            42520.        18697.
+4 Genderfluid    176          44024.            44274         17921.
+5 Genderqueer    201          41996.            42260         18929.
+6 Male          4950          42267.            42190         18853.
+7 Other          188          40804.            39329         19501.
+8 Polygender     193          44475.            45417         18236.
+# ℹ 2 more variables: min_sale_price <dbl>, max_sale_price <dbl>
+
+
+Normality check (Shapiro-Wilk) per group - NOTE: large samples often give significant results.
+# A tibble: 2 × 3
+  buyer_gender     n shapiro_p
+  <fct>        <int> <list>   
+1 Female        4918 <dbl [1]>
+2 Male          4950 <dbl [1]>
+
+(If group n > 5000 Shapiro test not performed due to size.)
+
+Variance (sd^2) and var test (F-test) result:
+Male variance:  355440125 
+Female variance:  349572321 
+
+	F test to compare two variances
+
+data:  male_prices and female_prices
+F = 1.0168, num df = 4949, denom df = 4917, p-value = 0.5589
+alternative hypothesis: true ratio of variances is not equal to 1
+95 percent confidence interval:
+ 0.9615831 1.0751518
+sample estimates:
+ratio of variances 
+          1.016786 
+
+
+Running Welch two-sample t-test (does not assume equal variances):
+
+	Welch Two Sample t-test
+
+data:  sale_price by buyer_gender
+t = 0.29439, df = 9866, p-value = 0.7685
+alternative hypothesis: true difference in means between group Female and group Male is not equal to 0
+95 percent confidence interval:
+ -629.6811  852.2452
+sample estimates:
+mean in group Female   mean in group Male 
+            42378.76             42267.47 
+
+
+Tidy results:
+# A tibble: 1 × 10
+  estimate estimate1 estimate2 statistic p.value parameter conf.low conf.high
+     <dbl>     <dbl>     <dbl>     <dbl>   <dbl>     <dbl>    <dbl>     <dbl>
+1     111.    42379.    42267.     0.294   0.768     9866.    -630.      852.
+# ℹ 2 more variables: method <chr>, alternative <chr>
+
+F-test suggests equal variances (p > 0.05). Running pooled (Student's) t-test:
+
+	Two Sample t-test
+
+data:  sale_price by buyer_gender
+t = 0.29439, df = 9866, p-value = 0.7685
+alternative hypothesis: true difference in means between group Female and group Male is not equal to 0
+95 percent confidence interval:
+ -629.7011  852.2652
+sample estimates:
+mean in group Female   mean in group Male 
+            42378.76             42267.47 
+
+
+Tidy pooled results:
+# A tibble: 1 × 10
+  estimate estimate1 estimate2 statistic p.value parameter conf.low conf.high
+     <dbl>     <dbl>     <dbl>     <dbl>   <dbl>     <dbl>    <dbl>     <dbl>
+1     111.    42379.    42267.     0.294   0.768      9866    -630.      852.
+# ℹ 2 more variables: method <chr>, alternative <chr>
+
+Effect size (Cohen's d) approximation:
+Cohen's d (pooled sd):  -0.0059 
+
+Decision: p-value >= 0.05 => do not reject H0. No strong evidence of difference in mean sale price between genders.
